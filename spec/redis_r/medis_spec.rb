@@ -8,13 +8,18 @@ RSpec.describe RedisR::Medis do
       config.db = 1
       config.password = nil
     end
+
+    @client = RedisR::Medis.instance
+    @redis = @client.redis
+  end
+
+  describe "#initialize" do
+
   end
 
   describe '#set' do
     before do
       @key = 'set_a_string_value'
-      @client = RedisR::Medis.instance
-      @redis = @client.redis
       # delete all test key
       @redis.del 'set_a_string_value'
     end
@@ -44,8 +49,6 @@ RSpec.describe RedisR::Medis do
 
   describe '#get' do
     before do
-      @client = RedisR::Medis.instance
-      @redis = @client.redis
       # delete all test key
       @redis.del 'rr'
     end
@@ -72,8 +75,6 @@ RSpec.describe RedisR::Medis do
 
   describe '#fetch' do
     before do
-      @client = RedisR::Medis.instance
-      @redis = @client.redis
       # delete all test key
       @redis.del 'rr'
     end

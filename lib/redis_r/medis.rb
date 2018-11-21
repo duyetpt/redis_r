@@ -16,7 +16,9 @@ module RedisR
     def initialize
       config = Config.instance
       @redis =
-        if config.password
+        if config.url
+          Redis.new(url: config.url)
+        elsif config.password
           Redis.new(host: config.host, port: config.port, db: config.db, password: config.password)
         else
           Redis.new(host: config.host, port: config.port, db: config.db)

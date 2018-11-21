@@ -6,7 +6,7 @@ module RedisR
   # Contain connection config for redis client
   class Config
     include Singleton
-    attr_accessor :host, :port, :password, :db
+    attr_accessor :host, :port, :password, :db, :url
 
     def host
       @host || 'localhost'
