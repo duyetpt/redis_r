@@ -14,7 +14,14 @@ RSpec.describe RedisR::Medis do
   end
 
   describe "#initialize" do
+    it "init medis by url" do
+      RedisR::Medis.setup do |config|
+        config.url = 'redis://localhost:6379/1'
+      end
 
+      client = RedisR::Medis.instance
+      expect(client.redis.hmset 'k1', 'kk1', 'test').to eq('OK')
+    end
   end
 
   describe '#set' do
