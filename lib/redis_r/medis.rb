@@ -29,7 +29,7 @@ module RedisR
     # TODO - support integer, date, datetime
     def set(obj, key, *attrs)
       hmset_params = [key]
-      if obj.is_a? String
+      if obj.is_a?(String) || obj.is_a?(Array)
         hmset_params << attrs[0]
         hmset_params << obj
       else

@@ -47,6 +47,28 @@ RSpec.describe RedisR::Medis do
       expect(@client.redis.hmget(@key, 'name').first).to eq("[\"raw1\",\"raw2\"]") # rubocop:disable Style/StringLiterals, Metrics/LineLength
     end
 
+    it 'set object with attributes' do
+      obj = double
+      allow(obj).to receive(:name) { 'raw1' }
+      allow(obj).to receive(:nick) { 'raw2' }
+
+      expect(@client.set(obj, @key, 'name', 'nick')).to eq('OK')
+
+      expect(@client.redis.hmget(@key, 'name').first).to eq('raw1')
+      expect(@client.redis.hmget(@key, 'nick').first).to eq('raw2')
+    end
+
+    it 'set object with array of attributes' do
+      obj = double
+      allow(obj).to receive(:name) { 'raw1' }
+      allow(obj).to receive(:nick) { 'raw2' }
+
+      expect(@client.set(obj, @key, *['name', 'nick'])).to eq('OK')
+
+      expect(@client.redis.hmget(@key, 'name').first).to eq('raw1')
+      expect(@client.redis.hmget(@key, 'nick').first).to eq('raw2')
+    end
+
     it 'set a string value' do
       obj = 'redis raw'
       expect(@client.set(obj, @key, 'name')).to eq('OK')
@@ -90,6 +112,12 @@ RSpec.describe RedisR::Medis do
       @redis.hmset 'rr', 'k1', 'v1'
 
       expect(@client.fetch('rr', 'k1')).to eq('v1')
+    end
+
+    it 'value is array' do
+      @redis.hmset 'rr', 'k1', "[\"raw1\",\"raw2\"]" # rubocop:disable Style/StringLiterals, Metrics/LineLength
+
+      expect(@client.fetch('rr', 'k1')).to eq(['raw1', 'raw2']) # rubocop:disable Style/WordArray, Metrics/LineLength
     end
 
     it 'value is nil' do
