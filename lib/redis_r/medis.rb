@@ -63,7 +63,7 @@ module RedisR
       value = get(key, attr)
       unless value
         value = yield
-        set value, key, attr
+        set value, key, attr if value
       end
 
       value

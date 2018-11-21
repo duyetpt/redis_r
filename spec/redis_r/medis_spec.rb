@@ -13,14 +13,14 @@ RSpec.describe RedisR::Medis do
     @redis = @client.redis
   end
 
-  describe "#initialize" do
-    it "init medis by url" do
+  describe '#initialize' do
+    it 'init medis by url' do
       RedisR::Medis.setup do |config|
         config.url = 'redis://localhost:6379/1'
       end
 
       client = RedisR::Medis.instance
-      expect(client.redis.hmset 'k1', 'kk1', 'test').to eq('OK')
+      expect(client.redis.hmset('k1', 'kk1', 'test')).to eq('OK')
     end
   end
 
@@ -63,7 +63,7 @@ RSpec.describe RedisR::Medis do
       allow(obj).to receive(:name) { 'raw1' }
       allow(obj).to receive(:nick) { 'raw2' }
 
-      expect(@client.set(obj, @key, *['name', 'nick'])).to eq('OK')
+      expect(@client.set(obj, @key, *['name', 'nick'])).to eq('OK') # rubocop:disable Lint/UnneededSplatExpansion, Style/WordArray, Metrics/LineLength
 
       expect(@client.redis.hmget(@key, 'name').first).to eq('raw1')
       expect(@client.redis.hmget(@key, 'nick').first).to eq('raw2')
@@ -130,6 +130,18 @@ RSpec.describe RedisR::Medis do
       ).to eq('v2')
 
       expect(@redis.hmget('rr', 'k2')).to eq(['v2'])
+    end
+
+    it 'value is nil, new value is nil' do
+      @redis.hmset 'rr', 'k1', 'v1'
+
+      expect(
+        @client.fetch('rr', 'k2') do
+          nil
+        end
+      ).to eq(nil)
+
+      expect(@redis.hmget('rr', 'k2')).to eq([nil])
     end
   end
 end
