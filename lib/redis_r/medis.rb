@@ -48,9 +48,11 @@ module RedisR
     # only return string or array of string
     def get(key, attr, vtype = :string)
       value = @redis.hmget(key, attr).first
-      case vtype
-      when :array
-        value = Oj.load(value)
+      if value
+        case vtype
+        when :array
+          value = Oj.load(value)
+        end
       end
 
       value

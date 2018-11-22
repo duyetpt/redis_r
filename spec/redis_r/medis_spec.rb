@@ -100,6 +100,12 @@ RSpec.describe RedisR::Medis do
 
       expect(@client.get('rr', 'k2')).to eq(nil)
     end
+
+    it 'get array but value is nil' do
+      @redis.hmset 'rr', 'k1', 'v1'
+
+      expect(@client.get('rr', 'k2', :array)).to eq(nil)
+    end
   end
 
   describe '#fetch' do
