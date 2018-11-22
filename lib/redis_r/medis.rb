@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require 'oj'
 require 'singleton'
 require 'redis'
 
@@ -27,16 +27,17 @@ module RedisR
 
     # Only support attribute type string or string array
     # TODO - support integer, date, datetime
-    def set(obj, key, *attrs)
-      hmset_params = [key]
-      if obj.is_a?(String) || obj.is_a?(Array)
-        hmset_params << attrs[0]
-        hmset_params << obj
+    def set(obj, key, *fields)
+      if obj.is_a?(String)
+        hmset_params = [key, fields[0], obj]
+      elsif obj.is_a?(Array)
+        hmset_params = [key, fields[0], Oj.dump(obj)]
       else
-        attrs.each do |attr|
-          raw_value = obj.__send__(attr)
-          value = raw_value.is_a?(Array) ? raw_value.to_json : raw_value
-          hmset_params << attr
+        hmset_params = [key]
+        fields.each do |field|
+          raw_value = obj.__send__(field)
+          value = raw_value.is_a?(Array) ? Oj.dump(raw_value) : raw_value
+          hmset_params << field
           hmset_params << value
         end
       end
@@ -45,12 +46,11 @@ module RedisR
     end
 
     # only return string or array of string
-    def get(key, attr)
+    def get(key, attr, vtype = :string)
       value = @redis.hmget(key, attr).first
-      begin
-        value = JSON.parse(value)
-      rescue StandardError => exception
-        # when value is string or primitive
+      case vtype
+      when :array
+        value = Oj.load(value)
       end
 
       value
@@ -59,8 +59,8 @@ module RedisR
     # get value if not
     # set value with key, attr
     # when set value is block
-    def fetch(key, attr)
-      value = get(key, attr)
+    def fetch(key, attr, vtype = :string)
+      value = get(key, attr, vtype)
       unless value
         value = yield
         set value, key, attr if value

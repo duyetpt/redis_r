@@ -92,7 +92,7 @@ RSpec.describe RedisR::Medis do
       # Style/StringLiterals, Style/WordArray
       @redis.hmset 'rr', 'k1', "[\"raw1\",\"raw2\"]" # rubocop:disable Style/StringLiterals, Metrics/LineLength
 
-      expect(@client.get('rr', 'k1')).to eq(['raw1', 'raw2']) # rubocop:disable Style/WordArray, Metrics/LineLength
+      expect(@client.get('rr', 'k1', :array)).to eq(['raw1', 'raw2']) # rubocop:disable Style/WordArray, Metrics/LineLength
     end
 
     it 'value is nil' do
@@ -117,7 +117,7 @@ RSpec.describe RedisR::Medis do
     it 'value is array' do
       @redis.hmset 'rr', 'k1', "[\"raw1\",\"raw2\"]" # rubocop:disable Style/StringLiterals, Metrics/LineLength
 
-      expect(@client.fetch('rr', 'k1')).to eq(['raw1', 'raw2']) # rubocop:disable Style/WordArray, Metrics/LineLength
+      expect(@client.fetch('rr', 'k1', :array)).to eq(['raw1', 'raw2']) # rubocop:disable Style/WordArray, Metrics/LineLength
     end
 
     it 'value is nil' do
